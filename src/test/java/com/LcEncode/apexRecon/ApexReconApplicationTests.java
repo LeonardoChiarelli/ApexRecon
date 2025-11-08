@@ -1,10 +1,10 @@
-package com.LcEncode.finops_orchestrator;
+package com.LcEncode.apexRecon;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class FinopsOrchestratorApplicationTests {
+class ApexReconApplicationTests {
 
 	@Test
 	void contextLoads() {

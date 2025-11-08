@@ -1,7 +1,7 @@
 # Read Me First
 The following was discovered as part of building this project:
 
-* The original package name 'com.LcEncode.finops-orchestrator' is invalid and this project uses 'com.LcEncode.finops_orchestrator' instead.
+* The original package name 'com.LcEncode.finops-orchestrator' is invalid and this project uses 'com.LcEncode.apexRecon' instead.
 
 # Getting Started
 

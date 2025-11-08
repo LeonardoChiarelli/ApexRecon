@@ -9,10 +9,10 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.LcEncode</groupId>
-	<artifactId>finops-orchestrator</artifactId>
+	<artifactId>apexRecon</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>finops-orchestrator</name>
-	<description>Uma plataforma de orquestração e automação de otimização de custos para aplicações e infra em nuvem (foco AWS), pensada para times de engenharia e finanças.</description>
+	<name>apexRecon</name>
+	<description>O ApexRecon é uma plataforma de software como serviço (SaaS) projetada para automatizar o processo de reconciliação de contas a receber (AR) para pequenas e médias empresas (PMEs). O sistema ingere faturas emitidas pela empresa e, simultaneamente, consome extratos bancários transacionais através de APIs de Open Banking.</description>
 	<url/>
 	<licenses>
 		<license/>
