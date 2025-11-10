@@ -1,7 +1,8 @@
-package com.LcEncode.apexRecon.bankMigrationService.domain.model;
+package com.LcEncode.apexRecon.bankMigrationService.domain.model.bankConnection;
 
 import com.LcEncode.apexRecon.bankMigrationService.domain.exception.DomainException;
 import com.LcEncode.apexRecon.bankMigrationService.domain.exception.ValidateException;
+import com.LcEncode.apexRecon.bankMigrationService.domain.model.bankConnection.valueObject.Provider;
 
 import java.time.Instant;
 import java.util.UUID;
@@ -10,9 +11,9 @@ public class BankConnection {
     private final UUID id;
     private final UUID organizationId;
     private final Provider provider;
-    private final String accessTokenSecretArn;
-    private final Instant lastSync;
-    private final boolean isActive;
+    private String accessTokenSecretArn;
+    private Instant lastSync;
+    private boolean isActive;
     private final String accountName;
     private final String accountMask;
 
@@ -35,8 +36,21 @@ public class BankConnection {
 
     public void updateLastSync(Instant syncTimestamp) {
         if (syncTimestamp != null && syncTimestamp.isAfter(Instant.now())) {
-           throw new Ba
+           throw new DomainException("Sync Timestamp cannot be future.");
         }
+
+        this.setLastSync(syncTimestamp);
+    }
+
+    public void revokeAccess() {
+        this.setActive(false);
+        // Dispara um Evento de Domínio: BankConnectionRevokedEvent(this.id)
+    }
+
+    public void reactivate(String newAccessTokenSecretArn) {
+        this.setActive(true);
+        this.accessTokenSecretArn = newAccessTokenSecretArn;
+        this.setLastSync(null);
     }
 
     public UUID getId() {
@@ -69,6 +83,18 @@ public class BankConnection {
 
     public String getAccountMask() {
         return accountMask;
+    }
+
+    public void setLastSync(Instant lastSync) {
+        this.lastSync = lastSync;
+    }
+
+    public void setActive(boolean active) {
+        isActive = active;
+    }
+
+    public void setAccessTokenSecretArn(String accessTokenSecretArn) {
+        this.accessTokenSecretArn = accessTokenSecretArn;
     }
 
     @Override
