@@ -3,6 +3,7 @@ package com.LcEncode.apexRecon.invoicingService.domain.model;
 import com.LcEncode.apexRecon.invoicingService.domain.exception.*;
 import com.LcEncode.apexRecon.invoicingService.domain.model.useCase.InvoiceItem;
 import com.LcEncode.apexRecon.invoicingService.domain.model.useCase.InvoiceStatus;
+import org.springframework.cglib.core.Local;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -17,7 +18,7 @@ public class Invoice {
     private BigDecimal totalAmount;
     private BigDecimal amountDue;
     private InvoiceStatus status;
-    private final LocalDate dueDate;
+    private LocalDate dueDate;
     private final LocalDate issueDate;
     private LocalDate paymentDate;
     private final List<InvoiceItem> items = new ArrayList<>();
@@ -69,7 +70,7 @@ public class Invoice {
     }
 
     public void applyPartialPayment(BigDecimal amountPaid) {
-        if (getStatus() == InvoiceStatus.PAID || getStatus() == InvoiceStatus.VOID) {
+        if (!this.isPayable()) {
             throw new InvoiceAlreadyPaidException(String.format("""
                     Invoice ID: %s
                     Status: %s
@@ -119,12 +120,28 @@ public class Invoice {
         recalculateTotals();
     }
 
+    public void updateDueDate(LocalDate newDueDate) {
+        if (!this.isEditable()) { throw new InvoiceTransitionException("Due Date only can be update in DRAFT status"); }
+
+        this.setDueDate(newDueDate);
+    }
+
     private void recalculateTotals() {
         setTotalAmount(this.items.stream()
                 .map(InvoiceItem::getTotal)
                 .reduce(BigDecimal.ZERO, BigDecimal::add));
 
         if (getStatus() == InvoiceStatus.DRAFT) { setAmountDue(getTotalAmount()); }
+    }
+
+    private boolean isEditable() {
+        return this.getStatus() == InvoiceStatus.DRAFT;
+    }
+
+    private boolean isPayable() {
+        return this.getStatus() == InvoiceStatus.SENT
+                || this.getStatus() == InvoiceStatus.PARTIALLY_PAID
+                || this.getStatus() == InvoiceStatus.OVERDUE;
     }
 
     public UUID getInvoice_id() {
@@ -189,6 +206,10 @@ public class Invoice {
 
     private void setTotalAmount(BigDecimal totalAmount) {
         this.totalAmount = totalAmount;
+    }
+
+    public void setDueDate(LocalDate dueDate) {
+        this.dueDate = dueDate;
     }
 
     @Override
