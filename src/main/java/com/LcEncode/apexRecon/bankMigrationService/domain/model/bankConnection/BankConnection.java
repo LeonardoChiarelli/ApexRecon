@@ -14,11 +14,9 @@ public class BankConnection {
     private String accessTokenSecretArn;
     private Instant lastSync;
     private boolean isActive;
-    private final String accountName;
-    private final String accountMask;
 
-    private BankConnection(UUID id, UUID organizationId, Provider provider, String accessTokenSecretArn, Instant lastSync, boolean isActive, String accountName, String accountMask) {
-        if (id == null || organizationId == null || provider == null || accessTokenSecretArn.isBlank() || accountName.isBlank() || accountMask.isBlank()) {
+    private BankConnection(UUID id, UUID organizationId, Provider provider, String accessTokenSecretArn, Instant lastSync, boolean isActive) {
+        if (id == null || organizationId == null || provider == null || accessTokenSecretArn.isBlank()) {
             throw new DomainException("All core Bank Connection must be provided.");
         }
 
@@ -28,8 +26,6 @@ public class BankConnection {
         this.accessTokenSecretArn = accessTokenSecretArn;
         this.lastSync = lastSync;
         this.isActive = isActive;
-        this.accountName = accountName;
-        this.accountMask = accountMask;
     }
 
     public static BankConnectionBuilder builder() { return new BankConnectionBuilder(); }
@@ -49,7 +45,7 @@ public class BankConnection {
 
     public void reactivate(String newAccessTokenSecretArn) {
         this.setActive(true);
-        this.accessTokenSecretArn = newAccessTokenSecretArn;
+        setAccessTokenSecretArn(newAccessTokenSecretArn);
         this.setLastSync(null);
     }
 
@@ -77,23 +73,15 @@ public class BankConnection {
         return isActive;
     }
 
-    public String getAccountName() {
-        return accountName;
-    }
-
-    public String getAccountMask() {
-        return accountMask;
-    }
-
-    public void setLastSync(Instant lastSync) {
+    private void setLastSync(Instant lastSync) {
         this.lastSync = lastSync;
     }
 
-    public void setActive(boolean active) {
+    private void setActive(boolean active) {
         isActive = active;
     }
 
-    public void setAccessTokenSecretArn(String accessTokenSecretArn) {
+    private void setAccessTokenSecretArn(String accessTokenSecretArn) {
         this.accessTokenSecretArn = accessTokenSecretArn;
     }
 
@@ -106,24 +94,18 @@ public class BankConnection {
                 Access Token Secret Arn: %s
                 Last Sync: %s
                 Is Active: %s
-                Account Name: %s
-                Account Mask: %s
                 """, getId(),
                 getOrganizationId(),
                 getProvider(),
                 getAccessTokenSecretArn(),
                 getLastSync(),
-                isActive(),
-                getAccountName(),
-                getAccountMask());
+                isActive());
     }
 
     public static class BankConnectionBuilder {
         private UUID organizationId;
         private Provider provider;
         private String accessTokenSecretArn;
-        private String accountName;
-        private String accountMask;
 
         public BankConnectionBuilder() {}
 
@@ -142,24 +124,13 @@ public class BankConnection {
             return this;
         }
 
-        public BankConnectionBuilder accountName(String accountName) {
-            this.accountName = accountName;
-            return this;
-        }
-
-        public BankConnectionBuilder accountMask(String accountMask) {
-            this.accountMask = accountMask;
-            return this;
-        }
 
         public BankConnection build() {
             if (organizationId == null) { throw new ValidateException("Bank Connection organization ID must be provided."); }
             if (provider == null) { throw new ValidateException("Bank Connection provider must be provided."); }
             if (accessTokenSecretArn.isBlank()) { throw new ValidateException("Bank Connection access Token Secret ARN must be provided."); }
-            if (accountName.isBlank()) { throw new ValidateException("Bank Connection account name must be provided."); }
-            if (accountMask.isBlank()) { throw new ValidateException("Bank Connection account mask must be provided."); }
 
-            return new BankConnection(UUID.randomUUID(), this.organizationId, this.provider, this.accessTokenSecretArn, null, true, this.accountName, this.accountMask);
+            return new BankConnection(UUID.randomUUID(), this.organizationId, this.provider, this.accessTokenSecretArn, null, true);
         }
     }
 }
